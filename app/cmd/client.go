@@ -168,6 +168,7 @@ type tcpRedirectConfig struct {
 type tunConfig struct {
 	Name    string        `mapstructure:"name"`
 	MTU     uint32        `mapstructure:"mtu"`
+	Fd      int           `mapstructure:"fd"`
 	Timeout time.Duration `mapstructure:"timeout"`
 	Address struct {
 		IPv4 string `mapstructure:"ipv4"`
@@ -859,7 +860,7 @@ func clientTUN(config tunConfig, c client.Client) error {
 		}
 	}
 	logger.Info("TUN listening", zap.String("interface", config.Name))
-	return server.Serve()
+	return server.Serve(config.Fd)
 }
 
 // parseServerAddrString parses server address string.

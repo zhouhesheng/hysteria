@@ -48,7 +48,7 @@ type EventLogger interface {
 	UDPError(addr string, err error)
 }
 
-func (s *Server) Serve() error {
+func (s *Server) Serve(fd int) error {
 	if !isIPv6Supported() {
 		s.Logger.Warn("tun-pre-check", zap.String("msg", "IPv6 is not supported or enabled on this system, TUN device is created without IPv6 support."))
 		s.Inet6Address = nil
@@ -70,6 +70,20 @@ func (s *Server) Serve() error {
 			zapLogger: s.Logger,
 		},
 	}
+
+	if fd != 0 {
+		tunName, err := getTunnelName(int32(fd))
+		if err != nil {
+			return err
+		}
+		tunOpts.Name = tunName
+		dupFd, err := dup(fd)
+		if err != nil {
+			return err
+		}
+		tunOpts.FileDescriptor = dupFd
+	}
+
 	tunIf, err := tun.New(tunOpts)
 	if err != nil {
 		return fmt.Errorf("failed to create tun interface: %w", err)
