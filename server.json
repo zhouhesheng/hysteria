@@ -1,0 +1,6 @@
+{
+  "listen": ":36712",
+  "cert": "./cert.pem",
+  "key": "./key.pem",
+  "obfs": "8ZuA2Zpqhuk8yakXvMjDqEXBwY"
+}
